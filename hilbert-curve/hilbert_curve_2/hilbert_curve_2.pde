@@ -19,8 +19,6 @@ int[][] POSITIONS = {
   {1, 0}
 };
 
-int[][] points = new int[N*N][];
-
 int last2bits(int x) {
   return (x & 3);
 }
@@ -65,6 +63,14 @@ int[] hindex2xy(int hindex, int N) {
   return out;
 }
 
+int[][] points = new int[N*N][];
+
+Snake snake = new Snake(10);
+float freq = 27.50;
+
+ArrayList<SnakeFood> food_locations = new ArrayList<SnakeFood>();
+SnakeFood current_food_location;
+
 void settings() {
   int line_length = (N + 2 * PADDING) * SCALE_FACTOR;
 
@@ -79,6 +85,14 @@ void setup() {
   strokeWeight(6);
   pulse = new Pulse(this);
   pulse.play();
+
+  food_locations.add(new SnakeFood(15));
+  food_locations.add(new SnakeFood(20));
+  food_locations.add(new SnakeFood(30));
+  food_locations.add(new SnakeFood(32));
+  food_locations.add(new SnakeFood(37));  
+
+  current_food_location = new SnakeFood(0);
 }
 
 int snake_location(int hindex, int coord) {
@@ -86,7 +100,7 @@ int snake_location(int hindex, int coord) {
 }
 
 void draw_snake() {
-  for (int i = 0; i < min(snake_length, (N*N) - 1); i++) {
+  for (int i = 0; i < min(snake.hindex, (N*N) - 1); i++) {
     line(
       snake_location(i, 0),
       snake_location(i, 1),
@@ -96,25 +110,32 @@ void draw_snake() {
   }
 }
 
-int snake_length = 10;
-float freq = 27.50;
-
-IntList food_locations = new IntList(15, 20, 30, 32, 37);
-int current_food_location;
-
 void draw() {
+  // Delay at the start to keep the audio changing, and screen drawing, in time
+  delay(100);
+
   draw_snake();
 
   if (food_locations.size() > 0) {
+    println(1);
+    println(
+      snake.hindex == 10 || (
+          snake.snake_x_location() == snake_location(current_food_location.hindex, 0) &&
+          snake.snake_y_location() == snake_location(current_food_location.hindex, 1)
+        )
+    );
+    println(snake.hindex);
+    println(current_food_location.hindex);
     if (
-        snake_length == 10 || (
-          snake_location(snake_length, 0) == snake_location(current_food_location, 0) &&
-          snake_location(snake_length, 1) == snake_location(current_food_location, 1)
+        snake.hindex == 10 || (
+          snake.snake_x_location() == snake_location(current_food_location.hindex, 0) &&
+          snake.snake_y_location() == snake_location(current_food_location.hindex, 1)
         )) {  // First run
+      println(2);
       current_food_location = food_locations.remove(0);
       point(
-        snake_location(current_food_location, 0),
-        snake_location(current_food_location, 1)
+        snake_location(current_food_location.hindex, 0),
+        snake_location(current_food_location.hindex, 1)
       );
       freq *= pow(1.05946, 6);
     }
@@ -122,17 +143,5 @@ void draw() {
 
   pulse.freq(freq);
 
-  // if (snake_length % 4 == 0) {
-  //   freq *= 1.05946;
-  // }
-
-  // pulse.freq(int(0.01 * (pow(snake_length,2 ))));
-
-  // println(snake_location(snake_length, 0));
-  // println(snake_location(snake_length, 1));
-  // println(points[snake_length]);
-
-  snake_length += 1;
-
-  delay(100);
+  snake.hindex += 1;
 }
