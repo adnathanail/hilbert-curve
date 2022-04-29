@@ -1,0 +1,41 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run hilbert_curve_2",
+      "type": "shell",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "command": "${config:processing.path}",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      },
+      "args": [
+		"--force",
+		"--sketch=${workspaceRoot}/hilbert-curve/hilbert_curve_2/",
+		"--output=${workspaceRoot}/hilbert-curve/hilbert_curve_2/out",
+		"--run"
+	  ],
+      // "windows": {
+      //   "type": "process",
+      //   "args": [
+      //     "--force",
+      //     {
+      //       "value": "--sketch=${workspaceRoot}",
+      //       "quoting": "strong"
+      //     },
+      //     {
+      //       "value": "--output=${workspaceRoot}\\out",
+      //       "quoting": "strong"
+      //     },
+      //     "--run"
+      //   ]
+      // }
+    }
+  ]
+}
