@@ -99,24 +99,32 @@ void draw_snake() {
 int snake_length = 10;
 float freq = 27.50;
 
-int[] food_locations = {60, 70, 80};
+IntList food_locations = new IntList(15, 20, 30, 32, 37);
+int current_food_location;
 
 void draw() {
   draw_snake();
 
-  // int food_loc = food_locations
-  if (snake_length == 10) {  // First run
-    point(
-      snake_location(food_locations[0], 0),
-      snake_location(food_locations[0], 1)
-    );
+  if (food_locations.size() > 0) {
+    if (
+        snake_length == 10 || (
+          snake_location(snake_length, 0) == snake_location(current_food_location, 0) &&
+          snake_location(snake_length, 1) == snake_location(current_food_location, 1)
+        )) {  // First run
+      current_food_location = food_locations.remove(0);
+      point(
+        snake_location(current_food_location, 0),
+        snake_location(current_food_location, 1)
+      );
+      freq *= pow(1.05946, 6);
+    }
   }
 
   pulse.freq(freq);
 
-  if (snake_length % 4 == 0) {
-    freq *= 1.05946;
-  }
+  // if (snake_length % 4 == 0) {
+  //   freq *= 1.05946;
+  // }
 
   // pulse.freq(int(0.01 * (pow(snake_length,2 ))));
 
