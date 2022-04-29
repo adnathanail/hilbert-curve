@@ -1,8 +1,8 @@
 class GameObject { 
     int hindex;
 
-    GameObject (int hindex) {  
-        this.hindex = hindex; 
+    GameObject (int in_hindex) {
+        this.hindex = in_hindex;
     }
 
     int get_location(int coord) {

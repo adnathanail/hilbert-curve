@@ -20,6 +20,7 @@ int[][] POSITIONS = {
 };
 
 int[][] points = new int[N*N][];
+boolean first_run = true;
 
 Snake snake = new Snake(10);
 float freq = 27.50;
@@ -40,6 +41,7 @@ void setup() {
 
     strokeWeight(6);
     pulse = new Pulse(this);
+    pulse.freq(freq);
     pulse.play();
 
     food_locations.add(new SnakeFood(15));
@@ -48,24 +50,29 @@ void setup() {
     food_locations.add(new SnakeFood(32));
     food_locations.add(new SnakeFood(37));  
 
-    current_food = new SnakeFood(0);
+    load_next_food();
+}
+
+void load_next_food() {
+    if (food_locations.size() > 0) {
+        current_food = food_locations.remove(0);
+        current_food.draw();
+        freq *= pow(1.05946, 6);
+    }
 }
 
 void draw() {
     // Delay at the start to keep the audio changing, and screen drawing, in time
-    delay(100);
+    if (first_run) {
+        first_run = false;
+    } else {
+        delay(100);
+    }
 
     snake.draw();
 
-    if (food_locations.size() > 0) {
-        if (snake.hindex == 10 || snake.hindex == current_food.hindex) {  // First run
-            current_food = food_locations.remove(0);
-            point(
-                current_food.get_x_location(),
-                current_food.get_y_location()
-            );
-            freq *= pow(1.05946, 6);
-        }
+    if (snake.hindex == current_food.hindex) {
+        load_next_food();
     }
 
     pulse.freq(freq);
