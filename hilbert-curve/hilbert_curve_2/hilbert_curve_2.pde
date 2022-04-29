@@ -97,10 +97,32 @@ void draw_snake() {
 }
 
 int snake_length = 10;
+float freq = 27.50;
+
+int[] food_locations = {60, 70, 80};
 
 void draw() {
   draw_snake();
-  pulse.freq(int(0.01 * (pow(snake_length,2 ))));
+
+  // int food_loc = food_locations
+  if (snake_length == 10) {  // First run
+    point(
+      snake_location(food_locations[0], 0),
+      snake_location(food_locations[0], 1)
+    );
+  }
+
+  pulse.freq(freq);
+
+  if (snake_length % 4 == 0) {
+    freq *= 1.05946;
+  }
+
+  // pulse.freq(int(0.01 * (pow(snake_length,2 ))));
+
+  // println(snake_location(snake_length, 0));
+  // println(snake_location(snake_length, 1));
+  // println(points[snake_length]);
 
   snake_length += 1;
 
