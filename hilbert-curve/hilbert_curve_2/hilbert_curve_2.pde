@@ -21,9 +21,12 @@ int[][] POSITIONS = {
 
 int[][] points = new int[N*N][];
 
+int last2bits(int x) {
+  return (x & 3);
+}
+
 int[] hindex2xy(int hindex, int N) {
-  l2b = last2bits(hindex & 3)
-  int[] tmp = POSITIONS[l2b];
+  int[] tmp = POSITIONS[last2bits(hindex)];
 
   hindex = hindex >> 2;
 
@@ -33,7 +36,7 @@ int[] hindex2xy(int hindex, int N) {
   for (var n = 4; n <= N; n*= 2) {
     var n2 = n / 2;
     
-    switch(l2b) {
+    switch(last2bits(hindex)) {
       case 0: /* case A: left-bottom */
             int tmp2 = x; x = y; y = tmp2;
             break;
@@ -78,8 +81,8 @@ void setup() {
   pulse.play();
 }
 
-void snake_location(hindex, coord) {
-  return (points[hindex][coord] + PADDING) * SCALE_FACTOR;
+int snake_location(int hindex, int coord) {
+ return (points[hindex][coord] + PADDING) * SCALE_FACTOR;
 }
 
 void draw_snake() {
@@ -88,7 +91,7 @@ void draw_snake() {
       snake_location(i, 0),
       snake_location(i, 1),
       snake_location(i+1, 0),
-      snake_location(i+1, 1),
+      snake_location(i+1, 1)
     );
   }
 }
