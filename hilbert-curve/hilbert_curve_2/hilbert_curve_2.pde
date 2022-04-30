@@ -44,11 +44,11 @@ void setup() {
     pulse.freq(freq);
     pulse.play();
 
-    food_locations.add(new SnakeFood(15));
-    food_locations.add(new SnakeFood(20));
     food_locations.add(new SnakeFood(30));
-    food_locations.add(new SnakeFood(32));
-    food_locations.add(new SnakeFood(37));  
+    food_locations.add(new SnakeFood(60));
+    food_locations.add(new SnakeFood(75));
+    food_locations.add(new SnakeFood(90));
+    food_locations.add(new SnakeFood(120));
 
     load_next_food();
 }
@@ -56,7 +56,6 @@ void setup() {
 void load_next_food() {
     if (food_locations.size() > 0) {
         current_food = food_locations.remove(0);
-        current_food.draw();
         freq *= pow(1.05946, 6);
     }
 }
@@ -69,11 +68,14 @@ void draw() {
         delay(100);
     }
 
-    snake.draw();
-
     if (snake.hindex == current_food.hindex) {
         load_next_food();
+        snake.length += 1;
     }
+
+    background(150);
+    snake.draw();
+    current_food.draw();
 
     pulse.freq(freq);
 
