@@ -1,16 +1,11 @@
-/**
- * Hilbert curve 
- * 
- * Based on this blog post
- * http://blog.marcinchwedczuk.pl/iterative-algorithm-for-drawing-hilbert-curve
- */
-
 import processing.sound.*;
 Pulse pulse;
 
 int N = 32;
 int SCALE_FACTOR = 10;
 int PADDING = 2;
+int NOTE_STARTER_OFFSET = 4;
+int SPEED_SCALE = 2; // 2 means play at half speed
 
 int[][] POSITIONS = {
   {0, 0},
@@ -21,10 +16,17 @@ int[][] POSITIONS = {
 String[] NOTES_STR = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
 
 Note[] SONG = {
-    new Note("C", 4, 4),
-    new Note("D", 4, 4),
-    new Note("E", 4, 4),
-    new Note("F", 4, 4),
+    new Note("D", 3, 2), new Note("E", 3, 2), new Note("F", 3, 2), new Note("G", 3, 2),
+    new Note("A", 3, 2), new Note("F", 3, 2), new Note("A", 3, 4),
+
+    new Note("G#", 3, 2), new Note("E", 3, 2), new Note("G#", 3, 4),
+    new Note("G", 3, 2), new Note("D#", 3, 2), new Note("G", 3, 4),
+
+    new Note("D", 3, 2), new Note("E", 3, 2), new Note("F", 3, 2), new Note("G", 3, 2),
+    new Note("A", 3, 2), new Note("F", 3, 2), new Note("A", 3, 2), new Note("D", 4, 2),
+
+    new Note("C", 4, 2), new Note("A", 3, 2), new Note("F", 3, 2), new Note("A", 3, 2),
+    new Note("C", 4, 8),
 };
 
 int[][] points = new int[N*N][];
@@ -58,24 +60,13 @@ void setup() {
     pulse.freq(freq);
     pulse.play();
 
-    // food_locations.add(new SnakeFood("C", 4, 8, 0));
-    // food_locations.add(new SnakeFood("D", 4, 12, 8));
-    // food_locations.add(new SnakeFood("E", 4, 16, 12));
-    // food_locations.add(new SnakeFood("F", 4, 20, 16));
-    // food_locations.add(new SnakeFood("G", 4, 24, 20));
-
-    // println(food_locations.get(0).hindex);
-    // println(food_locations.get(1).hindex);
-    // println(food_locations.get(2).hindex);
-    // println(food_locations.get(3).hindex);
-    // println(food_locations.get(4).hindex);
-
-    int hindex = 10;
+    int current_hindex = NOTE_STARTER_OFFSET;
 
     for (int i = 0; i < SONG.length; i++) {
-        food_locations.add(new SnakeFood(SONG[i].note, SONG[i].octave, hindex));
-        hindex += SONG[i].duration;
+        food_locations.add(new SnakeFood(SONG[i].note, SONG[i].octave, current_hindex * SPEED_SCALE));
+        current_hindex += SONG[i].duration;
     }
+    // TODO make the song stop
 
     load_next_food();
 }
@@ -86,7 +77,6 @@ void load_next_food() {
     }
     if (food_locations.size() > 0) {
         current_food = food_locations.remove(0);
-        println(current_food.frequency);
     } else {
         current_food.hidden = true;
     }
@@ -108,7 +98,6 @@ void draw() {
     background(150);
     snake.draw();
     current_food.draw();
-
     pulse.freq(freq);
 
     snake.hindex += 1;
