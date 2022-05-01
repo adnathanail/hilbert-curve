@@ -45,3 +45,16 @@ int[] hindex2xy(int hindex, int N) {
 int cached_h2x(int hindex, int coord) {
     return (points[hindex][coord] + PADDING) * SCALE_FACTOR;
 }
+
+float getFrequency(String note, int octave) {
+    float keyNumber = NOTES.indexOf(note);
+
+    if (keyNumber < 3) {
+        keyNumber = keyNumber + 12 + ((octave - 1) * 12) + 1; 
+    } else {
+        keyNumber = keyNumber + ((octave - 1) * 12) + 1; 
+    }
+
+    // Return frequency of note
+    return 440 * pow(2, (keyNumber - 49) / 12);
+};

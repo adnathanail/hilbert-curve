@@ -18,15 +18,24 @@ int[][] POSITIONS = {
   {1, 1},
   {1, 0}
 };
+String[] NOTES_STR = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
+
+Note[] SONG = {
+    new Note("C", 4, 4),
+    new Note("D", 4, 4),
+    new Note("E", 4, 4),
+    new Note("F", 4, 4),
+};
 
 int[][] points = new int[N*N][];
 boolean first_run = true;
 
-Snake snake = new Snake(10);
-float freq = 27.50;
+Snake snake = new Snake(1);  // TODO make this 0
+float freq = 0;
 
 ArrayList<SnakeFood> food_locations = new ArrayList<SnakeFood>();
 SnakeFood current_food;
+ArrayList<String> NOTES = new ArrayList();
 
 void settings() {
     int line_length = (N + 2 * PADDING) * SCALE_FACTOR;
@@ -39,24 +48,47 @@ void setup() {
         points[i] = hindex2xy(i, N);
     }
 
+    // Add all the notes to the list
+    for (var i = 0; i < 12; i++) {
+        NOTES.add(NOTES_STR[i]);
+    }
+
     strokeWeight(6);
     pulse = new Pulse(this);
     pulse.freq(freq);
     pulse.play();
 
-    food_locations.add(new SnakeFood(30));
-    food_locations.add(new SnakeFood(60));
-    food_locations.add(new SnakeFood(75));
-    food_locations.add(new SnakeFood(90));
-    food_locations.add(new SnakeFood(120));
+    // food_locations.add(new SnakeFood("C", 4, 8, 0));
+    // food_locations.add(new SnakeFood("D", 4, 12, 8));
+    // food_locations.add(new SnakeFood("E", 4, 16, 12));
+    // food_locations.add(new SnakeFood("F", 4, 20, 16));
+    // food_locations.add(new SnakeFood("G", 4, 24, 20));
+
+    // println(food_locations.get(0).hindex);
+    // println(food_locations.get(1).hindex);
+    // println(food_locations.get(2).hindex);
+    // println(food_locations.get(3).hindex);
+    // println(food_locations.get(4).hindex);
+
+    int hindex = 10;
+
+    for (int i = 0; i < SONG.length; i++) {
+        food_locations.add(new SnakeFood(SONG[i].note, SONG[i].octave, hindex));
+        hindex += SONG[i].duration;
+    }
 
     load_next_food();
 }
 
 void load_next_food() {
+    if (current_food != null) {
+        freq = current_food.frequency;
+    }
     if (food_locations.size() > 0) {
         current_food = food_locations.remove(0);
-        freq *= pow(1.05946, 6);
+        println(current_food.frequency);
+    } else {
+        current_food.hidden = true;
     }
 }
 
