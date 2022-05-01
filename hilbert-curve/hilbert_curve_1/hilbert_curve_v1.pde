@@ -5,7 +5,6 @@
  * http://blog.marcinchwedczuk.pl/iterative-algorithm-for-drawing-hilbert-curve
  */
 
-//int LINE_LENGTH = int(pow(2, 4));
 int N = 32;
 int SCALE_FACTOR = 10;
 int PADDING = 2;
