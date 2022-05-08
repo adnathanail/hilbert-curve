@@ -16,20 +16,6 @@ int[][] POSITIONS = {
 };
 String[] NOTES_STR = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
 
-Note[] SONG = {
-    new Note("D", 3, 2), new Note("E", 3, 2), new Note("F", 3, 2), new Note("G", 3, 2),
-    new Note("A", 3, 2), new Note("F", 3, 2), new Note("A", 3, 4),
-
-    new Note("G#", 3, 2), new Note("E", 3, 2), new Note("G#", 3, 4),
-    new Note("G", 3, 2), new Note("D#", 3, 2), new Note("G", 3, 4),
-
-    new Note("D", 3, 2), new Note("E", 3, 2), new Note("F", 3, 2), new Note("G", 3, 2),
-    new Note("A", 3, 2), new Note("F", 3, 2), new Note("A", 3, 2), new Note("D", 4, 2),
-
-    new Note("C", 4, 2), new Note("A", 3, 2), new Note("F", 3, 2), new Note("A", 3, 2),
-    new Note("C", 4, 8),
-};
-
 int[][] points = new int[N*N][];
 boolean first_run = true;
 
@@ -61,16 +47,6 @@ void setup() {
     pulse.freq(freq);
     pulse.play();
 
-    int current_hindex = NOTE_STARTER_OFFSET;
-
-    for (int i = 0; i < SONG.length; i++) {
-        food_locations.add(new SnakeFood(SONG[i].note, SONG[i].octave, current_hindex * SPEED_SCALE));
-        current_hindex += SONG[i].duration;
-    }
-    // TODO make the song stop
-
-    load_next_food();
-
     String path = dataPath("28672.mid");
     File midiFile = new File(path);
     try {
@@ -83,6 +59,10 @@ void setup() {
         // parse first track
         println("events of 1st track:");
         Track myTrack = tracks[1];
+
+        int current_hindex = NOTE_STARTER_OFFSET;
+        // TODO make the song stop
+
         // for (int j = 0; j < myTrack.size(); j++) {
         for (int j = 0; j < 100; j++) {
             // get midi-message for every event
@@ -95,18 +75,21 @@ void setup() {
                     print( (cmd==ShortMessage.NOTE_ON ? "NOTE_ON" : "NOTE_OFF") + "; ");
                     print("channel: " + m.getChannel() + "; ");
                     print("note: " + m.getData1() + "; ");
-                    print("freq: " + midiNoteToFrequency(m.getData1()) + "; ");
+                    // print("freq: " + midiNoteToFrequency(m.getData1()) + "; ");
                     println("velocity: " + m.getData2());
+
+                    food_locations.add(new SnakeFood(midiNoteToFrequency(m.getData1()), current_hindex * SPEED_SCALE));
+                    current_hindex += 2;
                 }
             }
         }
         println();
-    }
-
-    catch(Exception e) {
+    } catch(Exception e) {
         e.printStackTrace();
         exit();
     }
+
+    load_next_food();
 }
 
 void load_next_food() {

@@ -2,9 +2,9 @@ class SnakeFood extends GameObject {
     float frequency;
     boolean hidden;
 
-    SnakeFood (String note, int octave, int in_hindex) {
+    SnakeFood (float in_frequency, int in_hindex) {
         super(in_hindex);
-        this.frequency = noteNameToFrequency(note, octave);
+        this.frequency = in_frequency;
         this.hidden = false;
     }
 

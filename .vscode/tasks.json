@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Run hilbert_curve_2",
+      "label": "Run hilbert_curve_3",
       "type": "shell",
       "group": {
         "kind": "build",
@@ -17,8 +17,8 @@
       },
       "args": [
 		"--force",
-		"--sketch=${workspaceRoot}/hilbert-curve/hilbert_curve_2/",
-		"--output=${workspaceRoot}/hilbert-curve/hilbert_curve_2/out",
+		"--sketch=${workspaceRoot}/hilbert_curve_3/",
+		"--output=${workspaceRoot}/hilbert_curve_3/out",
 		"--run"
 	  ],
       // "windows": {
