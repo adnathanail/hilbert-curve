@@ -51,6 +51,7 @@ void setup() {
     File midiFile = new File(path);
     try {
         Sequence seq = MidiSystem.getSequence(midiFile);
+
         Track[] tracks = seq.getTracks();
 
         // how many tracks are there
@@ -63,8 +64,8 @@ void setup() {
         int current_hindex = NOTE_STARTER_OFFSET;
         // TODO make the song stop
 
-        // for (int j = 0; j < myTrack.size(); j++) {
-        for (int j = 0; j < 100; j++) {
+        for (int j = 0; j < myTrack.size(); j++) {
+        // for (int j = 0; j < 100; j++) {
             // get midi-message for every event
             if (myTrack.get(j).getMessage() instanceof ShortMessage) {
                 ShortMessage m =  (ShortMessage) myTrack.get(j).getMessage();
@@ -72,14 +73,20 @@ void setup() {
                 // log note-on or note-off events
                 int cmd = m.getCommand();
                 if (cmd == ShortMessage.NOTE_OFF || cmd == ShortMessage.NOTE_ON) {
-                    print( (cmd==ShortMessage.NOTE_ON ? "NOTE_ON" : "NOTE_OFF") + "; ");
-                    print("channel: " + m.getChannel() + "; ");
-                    print("note: " + m.getData1() + "; ");
-                    // print("freq: " + midiNoteToFrequency(m.getData1()) + "; ");
-                    println("velocity: " + m.getData2());
+                    if (m.getChannel() == 0) {
+                        if (j < 100) {
+                            print( (cmd==ShortMessage.NOTE_ON ? "NOTE_ON" : "NOTE_OFF") + "; ");
+                            print("channel: " + m.getChannel() + "; ");
+                            print("note: " + m.getData1() + "; ");
+                            print("freq: " + midiNoteToFrequency(m.getData1()) + "; ");
+                            println("velocity: " + m.getData2());
+                        }
 
-                    food_locations.add(new SnakeFood(midiNoteToFrequency(m.getData1()), current_hindex * SPEED_SCALE));
-                    current_hindex += 2;
+                        food_locations.add(new SnakeFood(midiNoteToFrequency(m.getData1()), current_hindex * SPEED_SCALE));
+                        current_hindex += 1;
+                    }
+                } else {
+                    println(cmd);
                 }
             }
         }
