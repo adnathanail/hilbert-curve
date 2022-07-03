@@ -1,0 +1,12 @@
+https://stackoverflow.com/questions/3850688/reading-midi-files-in-java
+http://www.tonalsoft.com/pub/pitch-bend/pitch.2005-08-31.17-00.aspx
+https://docs.oracle.com/javase/7/docs/api/javax/sound/midi/ShortMessage.html
+https://www.reddit.com/r/midi/comments/9655ua/is_there_any_way_to_determine_the_note_length/
+http://localhost:8000/blog/2022-05-08-hilbert-curve-part-3/
+https://discourse.processing.org/t/parse-midi-files/14126/4
+https://stackoverflow.com/questions/2467995/actual-note-duration-from-midi-duration
+https://stackoverflow.com/questions/20770138/finding-the-duration-a-note-is-held-midi
+https://www.google.com/search?q=java+parse+midi+file&oq=java+parse+midi+file&aqs=chrome..69i57.3191j0j7&sourceid=chrome&ie=UTF-8
+https://riptutorial.com/java/example/621/play-a-midi-file
+http://www.java2s.com/Code/Java/Development-Class/AnexamplethatplaysaMidisequence.htm
+https://stackoverflow.com/questions/27987400/how-to-get-note-on-off-messages-from-a-midi-sequence

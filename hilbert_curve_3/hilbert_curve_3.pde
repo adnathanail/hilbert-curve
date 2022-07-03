@@ -2,34 +2,34 @@ import processing.sound.*;
 import javax.sound.midi.*;
 Pulse pulse;
 
-int N = 32;
-int SCALE_FACTOR = 10;
-int PADDING = 2;
-int NOTE_STARTER_OFFSET = 4;
-int SPEED_SCALE = 2; // 2 means play at half speed
-
-int[][] POSITIONS = {
-  {0, 0},
-  {0, 1},
-  {1, 1},
-  {1, 0}
-};
-String[] NOTES_STR = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
-
-int[][] points = new int[N*N][];
-boolean first_run = true;
-
-Snake snake = new Snake(1);  // TODO make this 0
-float freq = 0;
-
-ArrayList<SnakeFood> food_locations = new ArrayList<SnakeFood>();
-SnakeFood current_food;
-ArrayList<String> NOTES = new ArrayList();
-
 void settings() {
     int line_length = (N + 2 * PADDING) * SCALE_FACTOR;
 
     size(line_length, line_length);
+}
+
+void addNotesToTrack(Track track, Track trk) throws InvalidMidiDataException {
+    for (int ii = 0; ii < track.size(); ii++) {
+        MidiEvent me = track.get(ii);
+        MidiMessage mm = me.getMessage();
+        if (mm instanceof ShortMessage) {
+            ShortMessage sm = (ShortMessage) mm;
+            int command = sm.getCommand();
+            int com = -1;
+            if (command == ShortMessage.NOTE_ON) {
+                com = 1;
+            } else if (command == ShortMessage.NOTE_OFF) {
+                com = 2;
+            }
+            if (com > 0) {
+                byte[] b = sm.getMessage();
+                int l = (b == null ? 0 : b.length);
+                MetaMessage metaMessage = new MetaMessage(com, b, l);
+                MidiEvent me2 = new MidiEvent(metaMessage, me.getTick());
+                trk.add(me2);
+            }
+        }
+    }
 }
 
 void setup() {
@@ -43,71 +43,69 @@ void setup() {
     }
 
     strokeWeight(6);
-    pulse = new Pulse(this);
-    pulse.freq(freq);
-    pulse.play();
+    // pulse = new Pulse(this);
+    // pulse.freq(freq);
+    // pulse.play();
 
     String path = dataPath("28672.mid");
     File midiFile = new File(path);
     try {
-        Sequence seq = MidiSystem.getSequence(midiFile);
+        Sequence sequence = MidiSystem.getSequence(midiFile);
 
-        Track[] tracks = seq.getTracks();
+        Sequencer sequencer = MidiSystem.getSequencer(); // Get the default Sequencer
+        sequencer.open(); // Open device
 
-        // how many tracks are there
-        println("number of tracks: " + tracks.length);
+        MetaEventListener mel = new MetaEventListener() {
+            @Override
+            public void meta(MetaMessage meta) {
+                final int type = meta.getType();
+                System.out.println("MEL - type: " + type);
+            }
+        };
+        sequencer.addMetaEventListener(mel);
 
-        // parse first track
-        println("events of 1st track:");
-        Track myTrack = tracks[1];
+        int[] types = new int[128];
+        for (int ii = 0; ii < 128; ii++) {
+            types[ii] = ii;
+        }
+        ControllerEventListener cel = new ControllerEventListener() {
 
-        int current_hindex = NOTE_STARTER_OFFSET;
-        // TODO make the song stop
-
-        for (int j = 0; j < myTrack.size(); j++) {
-        // for (int j = 0; j < 100; j++) {
-            // get midi-message for every event
-            if (myTrack.get(j).getMessage() instanceof ShortMessage) {
-                ShortMessage m =  (ShortMessage) myTrack.get(j).getMessage();
-
-                // log note-on or note-off events
-                int cmd = m.getCommand();
-                if (cmd == ShortMessage.NOTE_OFF || cmd == ShortMessage.NOTE_ON) {
-                    if (m.getChannel() == 0) {
-                        if (j < 100) {
-                            print( (cmd==ShortMessage.NOTE_ON ? "NOTE_ON" : "NOTE_OFF") + "; ");
-                            print("channel: " + m.getChannel() + "; ");
-                            print("note: " + m.getData1() + "; ");
-                            print("freq: " + midiNoteToFrequency(m.getData1()) + "; ");
-                            println("velocity: " + m.getData2());
-                        }
-
-                        food_locations.add(new SnakeFood(midiNoteToFrequency(m.getData1()), current_hindex * SPEED_SCALE));
-                        current_hindex += 1;
-                    }
+            @Override
+            public void controlChange(ShortMessage event) {
+                int command = event.getCommand();
+                if (command == ShortMessage.NOTE_ON) {
+                    System.out.println("CEL - note on!");
+                } else if (command == ShortMessage.NOTE_OFF) {
+                    System.out.println("CEL - note off!");
                 } else {
-                    println(cmd);
+                    System.out.println("CEL - unknown: " + command);
                 }
             }
+        };
+        int[] listeningTo = sequencer.addControllerEventListener(cel, types);
+        StringBuilder sb = new StringBuilder();
+        for (int ii = 0; ii < listeningTo.length; ii++) {
+            sb.append(ii);
+            sb.append(", ");
         }
-        println();
+        System.out.println("Listenning to: " + sb.toString());
+
+        Track[] tracks = sequence.getTracks();
+        Track trk = sequence.createTrack();
+        for (Track track : tracks) {
+            addNotesToTrack(track, trk);
+        }
+
+        sequencer.setSequence(sequence); // load it into sequencer
+        sequencer.start();  // start the playback
+
     } catch(Exception e) {
         e.printStackTrace();
         exit();
     }
 
+    food_locations.add(new SnakeFood(midiNoteToFrequency(60), 10));
     load_next_food();
-}
-
-void load_next_food() {
-    if (current_food != null) {
-        freq = current_food.frequency;
-    }
-    if (food_locations.size() > 0) {
-        current_food = food_locations.remove(0);
-    } else {
-        current_food.hidden = true;
-    }
 }
 
 void draw() {
@@ -126,7 +124,7 @@ void draw() {
     background(150);
     snake.draw();
     current_food.draw();
-    pulse.freq(freq);
+    // pulse.freq(freq);
 
     snake.hindex += 1;
 }

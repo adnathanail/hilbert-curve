@@ -45,3 +45,14 @@ int[] hindex2xy(int hindex, int N) {
 int cached_h2x(int hindex, int coord) {
     return (points[hindex][coord] + PADDING) * SCALE_FACTOR;
 }
+
+void load_next_food() {
+    if (current_food != null) {
+        freq = current_food.frequency;
+    }
+    if (food_locations.size() > 0) {
+        current_food = food_locations.remove(0);
+    } else {
+        current_food.hidden = true;
+    }
+}
